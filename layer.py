@@ -17,12 +17,12 @@ class Layer:
         self.dW = []
         self.db = []
 
-    def _activate(self, z: float) -> float:
+    def activate(self, z: float) -> float:
         if self.activation == 'relu': return max(0.0, z)
         if self.activation == 'sigmoid': return 1.0 / (1.0 + np.exp(-z))
         return z
 
-    def _activate_deriv(self, z: float) -> float:
+    def activate_deriv(self, z: float) -> float:
         if self.activation == 'relu': return 1.0 if z > 0 else 0.0
         if self.activation == 'sigmoid':
             s = 1.0/(1.0+np.exp(-z))
@@ -36,13 +36,13 @@ class Layer:
         for j in range(self.n_out):
             z = sum(self.W[j][k] * A_prev[k] for k in range(self.n_in)) + self.b[j]
             Z.append(z)
-            A.append(self._activate(z))
+            A.append(self.activate(z))
         self.Z = Z
         return A
     
     def backward(self, dA: list[float]) -> list[float]:
         m = 1  # assuming single-sample gradients
-        dZ = [dA[j] * self._activate_deriv(self.Z[j]) for j in range(self.n_out)]
+        dZ = [dA[j] * self.activate_deriv(self.Z[j]) for j in range(self.n_out)]
         # gradients
         self.dW = [[dZ[j] * self.A_prev[k] for k in range(self.n_in)]
                   for j in range(self.n_out)]
