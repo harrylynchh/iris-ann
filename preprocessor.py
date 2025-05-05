@@ -36,6 +36,11 @@ def load_and_preprocess(
             features.append([float(x) for x in row[:4]])
             labels.append(row[4])
     
+    # Fix errors in the dataset (see iris_description.txt)
+    features[34][3] = 0.2;
+    features[37][1] = 3.6;
+    features[37][2] = 1.4;
+    
     X = np.array(features)
 
     # Z-score normalization (0 mean and 1 stdev) w/ scikit
