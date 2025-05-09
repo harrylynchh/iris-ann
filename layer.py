@@ -17,31 +17,33 @@ class Layer:
         self.dW = []
         self.db = []
 
-    def _activate(self, z: float) -> float:
+    def _activate(self, Z: list[float]) -> list[float]:
         if self.activation == 'relu':
-            return max(0.0, z)
-        if self.activation == 'sigmoid':
-            return 1.0 / (1.0 + math.exp(-z))
-        return z
+            return [max(0.0, z) for z in Z]
+        if self.activation == 'softmax':
+            exps = [math.exp(z) for z in Z]
+            s = sum(exps)
+            return [e / s for e in exps]
+        return Z  # other activations not used here
 
     def _activate_deriv(self, z: float) -> float:
         if self.activation == 'relu':
             return 1.0 if z > 0 else 0.0
-        if self.activation == 'sigmoid':
-            s = 1.0/(1.0+math.exp(-z))
-            return s*(1-s)
         return 1.0
 
     def forward(self, A_prev: list[float]) -> list[float]:
         self.A_prev = A_prev[:]
         self.Z = [sum(self.W[j][k] * A_prev[k] for k in range(self.n_in)) + self.b[j]
                   for j in range(self.n_out)]
-        A = [self._activate(z) for z in self.Z]
+        A = self._activate(self.Z)
         return A
 
-    def backward(self, dA: list[float]) -> list[float]:
-        # compute dZ
-        dZ = [dA[j] * self._activate_deriv(self.Z[j]) for j in range(self.n_out)]
+    def backward(self, dA: list[float], y_true: list[float] = None) -> list[float]:
+        # For softmax+cross-entropy, dA already equals (A - y)
+        if self.activation == 'softmax':
+            dZ = dA[:]
+        else:
+            dZ = [dA[j] * self._activate_deriv(self.Z[j]) for j in range(self.n_out)]
         # gradients
         self.dW = [[dZ[j] * self.A_prev[k] for k in range(self.n_in)] for j in range(self.n_out)]
         self.db = dZ[:]
