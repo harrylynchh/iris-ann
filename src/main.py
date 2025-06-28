@@ -19,7 +19,7 @@ NETWK_DIMS = [4, 8 ,3]
 # Preprocess data and separate into training, validation, and testing sets
 # NOTE: We retrieve the scaler object s.t we can identically fit given data points
 #       from user
-X_train, Y_train, X_val, Y_val, X_test, Y_test, scaler = load_and_preprocess('iris_dataset.txt')
+X_train, Y_train, X_val, Y_val, X_test, Y_test, scaler = load_and_preprocess('../data/iris_dataset.txt')
 
 # Testing var so I could skip user input and just see the model run on tuned settings
 testing = False
